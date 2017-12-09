@@ -109,9 +109,9 @@ class PolymerLens2(Lens):
                 break
                 
         if isPolymerOfDegN:
-            o=[chr(x+ord('a')) for x in range(size)]
             # print len(inp)/size, "ddd"
-            return o*(len(inp)/size)
+            # return [sprintSeq(monomer)]*(len(inp)/size)
+            return ['m']*(len(inp)/size)
         else:
             return [None * len(inp)]
              
@@ -140,6 +140,12 @@ class QuadLens(Lens):
     def project(cls,inp):
         return IncrLens2.project(IncrLens2.project(seq))
         
+class SortedLens(Lens):
+    
+    @classmethod
+    def project(cls,inp):
+        return [(0 if i+1>=len(inp) else ((inp[i+1])>(inp[i]))) for i,c in enumerate(inp)] 
+
 
 class FourierLens(Lens):
     
@@ -174,7 +180,7 @@ def tickAll():
         o.tick()
 
 def sprintSeq(s):
-    return ''.join((" "+str(x) if x>=0 else str(x))  +","  for x in s)
+    return ''.join((" "+str(x) if x>=0 else str(x))  +""  for x in s)
     
 
 letterSeq="abcdefghi"
@@ -188,6 +194,7 @@ print sprintSeq(PolymerLens2.project(seq)), "PolymerLens2"
 print sprintSeq(IncrLens2.project(seq)), "IncrLens2"
 print sprintSeq(QuadLens.project(seq)), "QuadLens"
 print sprintSeq(AccLens.project(seq)), "AccLens"
+print sprintSeq(SortedLens.project(seq)), "SortedLens"
 
 i=0
 for time in range(20):
