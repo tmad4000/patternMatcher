@@ -1,7 +1,7 @@
 
 eyeView=""
 
-class Neur:
+class FingAction:
     
 
     def __init__(self):
@@ -9,25 +9,25 @@ class Neur:
 
     
     def __init__(self,out):
-        self.fatigue=0
+        self.fatigued=-2
         self.out=out
 
     def tick(self):
-        if(self.fatigue>0):
-            self.fatigue=self.fatigue-1
+        if(self.fatigued>0):
+            self.fatigued=self.fatigued-1
 
     def stim(self):
-        if(self.fatigue<2):
+        if(self.fatigued<=0):
             self.fire()
             
         
     def fire(self):
-        self.fatigue=self.fatigue+2
+        self.fatigued=self.fatigued+2
         self.out.stim()
 
 
 
-class Motor():
+class CompInput():
 
     
     def __init__(self,outLetter):
@@ -39,29 +39,30 @@ class Motor():
         pass
 
     def stim(self):
-        # if(fatigue<2):
+        # if(fatigued<2):
         self.fire()
         
     def fire(self):
-        # self.fatigue=4
+        # self.fatigued=4
         print(self.outLetter),
 
         global eyeView
         eyeView=self.outLetter
 
 
-m1=Motor("a")
-n1=Neur(m1)
+ci1=CompInput("a")
+f1=FingAction(ci1)
 
 
-m2=Motor("b")
-n2=Neur(m2)
+ci2=CompInput("b")
+f2=FingAction(ci2)
 
-u=[m1,n1, m2, n2]
+u=[ci1,f1, ci2, f2]
 
 def tickAll():
     global u, eyeView
-    print "\n-",eyeView
+    print "-",
+    # print "\n-",eyeView
     eyeView=""
     
     for o in u:
@@ -70,27 +71,26 @@ def tickAll():
 seq="aabbaaaa"
 print seq
 
-for time in range(10):
-
-    i=0
-
+i=0
+for time in range(20):
     if(i<len(seq)): 
-        c=seq[i]       
-        if c=="a":        
-            n1.stim()
-            if eyeView=="a":
+        shouldAdvance=True
+        c=seq[i]   
+        if c=="a":    
+            if f1.fatigued>0:
+                shouldAdvance=False
                 pass
-            else:
-                i=i-1
-
-        if c=="b":        
-            n2.stim()
-            if eyeView=="b":
+            else:    
+                f1.stim()
+        elif c=="b":        
+            if f2.fatigued>0:
+                shouldAdvance=False
                 pass
-            else:
-                i=i-1
-
-        i=i+1
+            else:    
+                f2.stim()
+        
+        if shouldAdvance:
+            i=i+1
     
     tickAll()
     
