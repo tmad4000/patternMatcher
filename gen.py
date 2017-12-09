@@ -127,10 +127,31 @@ class PastKnowlPieceLens(Lens):
     def project(cls,inp):
         pass
 
-    def project(self,inp):
+    def projectRanges(self,inp):
         pSeq=strToNumSeq(self.knowl)
         occs=listIndexOfs(inp,pSeq)
-        return occs        
+        return occs 
+
+    def project(self,inp):
+        outp=inp[:]
+        pSeq=strToNumSeq(self.knowl)
+        occs=listIndexOfs(outp,pSeq)
+        if not occs:
+            return None
+
+        for o in occs:
+            for i in range(o[0], o[1]):
+                outp[i]="  "
+
+            outp[o[0]]="<"+str(self.id)
+
+            if o[0]==o[1]:
+                outp[o[1]-1]=outp[o[1]]+">"                
+            else:
+                outp[o[1]-1]=""+str(self.id)+">"
+            
+
+        return outp        
 
 class AllPastKnowledgeLens(Lens):
     @classmethod
@@ -138,21 +159,31 @@ class AllPastKnowledgeLens(Lens):
         allPastKnowledge=["boogie", "board", "boogie board", "3.14159"]
         allPastKnowledgeLenses=[PastKnowlPieceLens(k, i) for i,k in enumerate(allPastKnowledge)]
 
-        allOccs=[]
+        # allOccs=[]
+        # for kl in allPastKnowledgeLenses:
+        #     r=kl.projectRanges(inp)
+        #     if r:
+        #         allOccs.append((kl.id, kl.knowl, r))
+
+        allProjs=[]
         for kl in allPastKnowledgeLenses:
             r=kl.project(inp)
             if r:
-                allOccs.append((kl.id, kl.knowl, r))
+                allProjs.append(r)
 
 
         
         # p="boogie"
         # pSeq=strToNumSeq(p)
         # occs=listIndexOfs(inp,pSeq)
+
         # for i in range(len(inp)-1,0,-1):
+        #     for knowlOcc in allOccs:
+        #         allOccs
             
 
-        return allOccs
+        # return allOccs
+        return allProjs
              
 
 class IncrLens(Lens):
@@ -239,6 +270,8 @@ def sprintSeq(s):
 def strToNumSeq(letterSeq):
     return [ord(c) for c in letterSeq]
 
+# letterSeq="aboogiebbabbboogie"
+# letterSeq="aboogiebbabbboard"
 letterSeq="aboogie boardbbabbboogie"
 seq=strToNumSeq(letterSeq)
 # seq=[math.sin(2*math.pi * x/10) for x in range(0,10)]
@@ -252,7 +285,7 @@ print sprintSeq(IncrLens2.project(seq)), "IncrLens2"
 print sprintSeq(QuadLens.project(seq)), "QuadLens"
 print sprintSeq(AccLens.project(seq)), "AccLens"
 print sprintSeq(SortedLens.project(seq)), "SortedLens"
-print sprintSeq(AllPastKnowledgeLens.project(seq)), "AllPastKnowledgeLens"
+print "\n".join([(", ".join([" "+chr(x) if isinstance(x, (int, long)) else x  for x in proj])) for proj in AllPastKnowledgeLens.project(seq)]), "AllPastKnowledgeLens"
 
 i=0
 for time in range(20):
