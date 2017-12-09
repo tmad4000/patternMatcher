@@ -116,19 +116,43 @@ class PolymerLens2(Lens):
             return ['m']
             
         #     return [None * len(inp)]
-             
-class PastKnowledgeLens(Lens):
+
+class PastKnowlPieceLens(Lens):
+
+    def __init__(self,knowl,id):
+        self.knowl=knowl
+        self.id=id
+
     @classmethod
     def project(cls,inp):
-        
-        p="boogie"
+        pass
 
-        pSeq=strToNumSeq(p)
-
-        # allPastKnowledge=[]
+    def project(self,inp):
+        pSeq=strToNumSeq(self.knowl)
         occs=listIndexOfs(inp,pSeq)
+        return occs        
 
-        return occs
+class AllPastKnowledgeLens(Lens):
+    @classmethod
+    def project(cls,inp):
+        allPastKnowledge=["boogie", "board", "boogie board", "3.14159"]
+        allPastKnowledgeLenses=[PastKnowlPieceLens(k, i) for i,k in enumerate(allPastKnowledge)]
+
+        allOccs=[]
+        for kl in allPastKnowledgeLenses:
+            r=kl.project(inp)
+            if r:
+                allOccs.append((kl.id, kl.knowl, r))
+
+
+        
+        # p="boogie"
+        # pSeq=strToNumSeq(p)
+        # occs=listIndexOfs(inp,pSeq)
+        # for i in range(len(inp)-1,0,-1):
+            
+
+        return allOccs
              
 
 class IncrLens(Lens):
@@ -200,7 +224,7 @@ def listIndexOfs(haystack,needle):
     for i,x in enumerate(haystack):
         foundNeedle=True
         for j,y in enumerate(needle):
-            if i+j > len(haystack) or haystack[i+j] !=y:
+            if i+j >= len(haystack) or haystack[i+j] !=y:
                 foundNeedle=False
                 break
         if foundNeedle:
@@ -215,7 +239,7 @@ def sprintSeq(s):
 def strToNumSeq(letterSeq):
     return [ord(c) for c in letterSeq]
 
-letterSeq="aboogiebbabbboogie"
+letterSeq="aboogie boardbbabbboogie"
 seq=strToNumSeq(letterSeq)
 # seq=[math.sin(2*math.pi * x/10) for x in range(0,10)]
 # seq=[1,0,1,0,1,0,1,0,1,0,1,0]
@@ -228,7 +252,7 @@ print sprintSeq(IncrLens2.project(seq)), "IncrLens2"
 print sprintSeq(QuadLens.project(seq)), "QuadLens"
 print sprintSeq(AccLens.project(seq)), "AccLens"
 print sprintSeq(SortedLens.project(seq)), "SortedLens"
-print sprintSeq(PastKnowledgeLens.project(seq)), "PastKnowledgeLens"
+print sprintSeq(AllPastKnowledgeLens.project(seq)), "AllPastKnowledgeLens"
 
 i=0
 for time in range(20):
