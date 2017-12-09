@@ -111,9 +111,11 @@ class PolymerLens2(Lens):
         if isPolymerOfDegN:
             # print len(inp)/size, "ddd"
             # return [sprintSeq(monomer)]*(len(inp)/size)
-            return ['m']*(len(inp)/size)
+          return ['m']*(len(inp)/size)
         else:
-            return [None * len(inp)]
+            return ['m']
+            
+        #     return [None * len(inp)]
              
 
 class IncrLens(Lens):
@@ -183,10 +185,10 @@ def sprintSeq(s):
     return ''.join((" "+str(x) if x>=0 else str(x))  +""  for x in s)
     
 
-letterSeq="abcdefghi"
+letterSeq="abbabb"
 seq=[ord(c) for c in letterSeq]
-seq=[math.sin(2*math.pi * x/10) for x in range(0,10)]
-seq=[1,0,1,0,1,0,1,0,1,0,1,0]
+# seq=[math.sin(2*math.pi * x/10) for x in range(0,10)]
+# seq=[1,0,1,0,1,0,1,0,1,0,1,0]
 
 print sprintSeq(seq), "SEQ"
 # print sprintSeq(PolymerLens.project(seq)), "PolymerLens"
