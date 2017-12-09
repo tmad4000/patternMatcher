@@ -1,3 +1,4 @@
+import math
 
 eyeView=""
 
@@ -50,6 +51,110 @@ class CompInput():
         eyeView=self.outLetter
 
 
+class Lens:
+    @classmethod
+    def project(cls,inp):
+        pass
+
+class RepLens(Lens):
+    @classmethod
+    def project(cls,inp):
+        pass
+
+class NeuralLens(Lens):
+    @classmethod
+    def project(cls,inp):
+        pass
+
+
+class PolymerLens(Lens):
+    @classmethod
+    def project(cls,inp):
+
+        isPolymerOfDegN=True
+        size=1
+        for size in range(1,len(inp)/2+1):
+            monomer=inp[0:size]
+            print "*",monomer
+            isPolymerOfDegN=True
+            for i in range(0,len(inp),size):
+                if inp[i:i+size] != monomer:
+                    isPolymerOfDegN=False
+                    break
+    
+            if isPolymerOfDegN:
+                return size
+    
+        if isPolymerOfDegN:
+            return size
+        else:
+            return 0
+
+class PolymerLens2(Lens):
+    @classmethod
+    def project(cls,inp):
+
+        isPolymerOfDegN=True
+        size=1
+        for size in range(1,len(inp)/2+1):
+            monomer=inp[0:size]
+            # print "*",monomer
+            isPolymerOfDegN=True
+            for i in range(0,len(inp),size):
+                if inp[i:i+size] != monomer:
+                    isPolymerOfDegN=False
+                    break
+    
+            if isPolymerOfDegN:
+                break
+                
+        if isPolymerOfDegN:
+            o=[chr(x+ord('a')) for x in range(size)]
+            # print len(inp)/size, "ddd"
+            return o*(len(inp)/size)
+        else:
+            return [None * len(inp)]
+             
+
+class IncrLens(Lens):
+    
+    @classmethod
+    def project(cls,inp):
+        diff=(inp[1])-(inp[0])
+
+        for i in range(0,len(inp)-1):
+            if (inp[i+1])-(inp[i]) != diff:
+                return False
+        
+        return diff
+
+class IncrLens2(Lens):
+    
+    @classmethod
+    def project(cls,inp):
+        return [(0 if i+1>=len(inp) else (inp[i+1])-(inp[i])) for i,c in enumerate(inp)] 
+
+class QuadLens(Lens):
+    
+    @classmethod
+    def project(cls,inp):
+        return IncrLens2.project(IncrLens2.project(seq))
+        
+
+class FourierLens(Lens):
+    
+    @classmethod
+    def project(cls,inp):
+        pass
+
+
+class AccLens(Lens):
+    
+    @classmethod
+    def project(cls,inp):
+        return [(0 if i+1>=len(inp) else (inp[i+1])+(inp[i])) for i,c in enumerate(inp)] 
+        pass
+
 ci1=CompInput("a")
 f1=FingAction(ci1)
 
@@ -68,8 +173,21 @@ def tickAll():
     for o in u:
         o.tick()
 
-seq="aabbaaaa"
-print seq
+def sprintSeq(s):
+    return ''.join((" "+str(x) if x>=0 else str(x))  +","  for x in s)
+    
+
+letterSeq="abcdefghi"
+seq=[ord(c) for c in letterSeq]
+seq=[math.sin(2*math.pi * x/10) for x in range(0,10)]
+seq=[1,0,1,0,1,0,1,0,1,0,1,0]
+
+print sprintSeq(seq), "SEQ"
+# print sprintSeq(PolymerLens.project(seq)), "PolymerLens"
+print sprintSeq(PolymerLens2.project(seq)), "PolymerLens2"
+print sprintSeq(IncrLens2.project(seq)), "IncrLens2"
+print sprintSeq(QuadLens.project(seq)), "QuadLens"
+print sprintSeq(AccLens.project(seq)), "AccLens"
 
 i=0
 for time in range(20):
